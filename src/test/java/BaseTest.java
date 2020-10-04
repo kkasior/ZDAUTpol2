@@ -6,6 +6,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -28,10 +29,13 @@ public class BaseTest {
         String devToUrl = "https://dev.to";
         driver.get(devToUrl);
         wait = new WebDriverWait(driver, 20);
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        //poczekaj zanim wywalisz error,
+        //że elementu nie ma 10 sekund, sprawdzaj co sekundę czy element jest
     }
 
     @Test
-    public void firstTest(){
+    public void selectFirstPostFromWeek(){
         WebElement week = driver.findElement(By.xpath("//a[@href='/top/week']"));
         week.click();
 
@@ -81,6 +85,34 @@ public class BaseTest {
         highlightElement(driver,java);
         java.click();
     }
+
+    @Test
+    public void playFourthPodcast(){
+        WebElement podcast = driver.findElement(By.xpath("//a[@href='/pod']"));
+        podcast.click();
+        wait.until(ExpectedConditions.urlToBe("https://dev.to/pod"));
+        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.tagName("h3")));
+        List<WebElement> podcasts = driver.findElements(By.tagName("h3"));
+        podcasts.get(3).click();
+        wait.until(ExpectedConditions.urlContains("stackpodcast"));
+        WebElement playArea = driver.findElement(By.className("record-wrapper"));
+        playArea.click();
+        WebElement initializing = driver.findElement(By.className("status-message"));
+        wait.until(ExpectedConditions.invisibilityOf(initializing));
+        String playAreaClassAttribute = playArea.getAttribute("class");
+        boolean isPlaying = playAreaClassAttribute.contains("playing");
+
+        assertTrue("Podcast isn't playing",isPlaying);
+    }
+
+
+
+
+//        WebElement initializing = driver.findElement(By.className("status-message"));
+//        wait.until(ExpectedConditions.invisibilityOf(initializing));
+//        String classAttribute = playButton.getAttribute("class");
+//        boolean isPlaying = classAttribute.contains("playing");
+//        assertTrue(isPlaying);
 
 
 
