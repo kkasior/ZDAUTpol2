@@ -1,4 +1,5 @@
 import devToPages.DevToMainPage;
+import devToPages.DevToSearchResultsPage;
 import devToPages.DevToSinglePostPage;
 import devToPages.DevToWeekPage;
 import org.junit.Before;
@@ -8,6 +9,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -55,29 +57,23 @@ public class BaseTest {
 
     @Test
     public void searchBarTesting() {
-        
 
-        WebElement searchBox = driver.findElement(By.id("nav-search"));
-        highlightElement(driver, searchBox);
+        DevToMainPage devToMainPage = new DevToMainPage(driver,wait);
         String searchText = "testing";
-        searchBox.sendKeys(searchText);
-        searchBox.sendKeys(Keys.ENTER);
-        String searchUrl = "https://dev.to/search?q=";
-        String searchingUrlWithText = searchUrl + searchText;
+        DevToSearchResultsPage devToSearchResultsPage = devToMainPage.search(searchText);
+
+        String searchingUrlWithText = devToSearchResultsPage.url + searchText;
         wait.until(ExpectedConditions.urlToBe(searchingUrlWithText));
 
-        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.cssSelector("h2.crayons-story__title > a")));
-        List<WebElement> postTilesList = driver.findElements(By.cssSelector("h2.crayons-story__title > a"));
+        ArrayList<String> postTilesList = devToSearchResultsPage.getTopThreePostTiles();
 
         int i = 0;
         while (i<3){
-            highlightElement(driver,postTilesList.get(i));
+            String postTileText = postTilesList.get(i);
+            postTileText = postTileText.toLowerCase();
+            assertTrue("there's no searching value in post tile",postTileText.contains(searchText));
             i++;
         }
-
-        WebElement element = postTilesList.get(0);
-        String elementText = element.getText();
-        assertTrue("there's no searching value in post tile", elementText.contains(searchText));
     }
 
     @Test
