@@ -60,21 +60,27 @@ public class BaseTest {
         String searchUrl = "https://dev.to/search?q=";
         String searchingUrlWithText = searchUrl + searchText;
         wait.until(ExpectedConditions.urlToBe(searchingUrlWithText));
+
+        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.cssSelector("h2.crayons-story__title > a")));
         List<WebElement> postTilesList = driver.findElements(By.cssSelector("h2.crayons-story__title > a"));
 
-//        for(int i = 0; i<3; i++){
-//            WebElement element = postTilesList.get(i);
-//            String elementText = element.getText();
-//
-//            assertTrue("there's no searching value in post tile", elementText.contains(searchText));
-//        }
+        int i = 0;
+        while (i<3){
+            highlightElement(driver,postTilesList.get(i));
+            i++;
+        }
 
         WebElement element = postTilesList.get(0);
         String elementText = element.getText();
         assertTrue("there's no searching value in post tile", elementText.contains(searchText));
     }
 
-    
+    @Test
+    public void findJavaInNavBar(){
+        WebElement java = driver.findElement(By.cssSelector("div#default-sidebar-element-java > a"));
+        highlightElement(driver,java);
+        java.click();
+    }
 
 
 
